@@ -1,7 +1,44 @@
+import styled from '@emotion/styled'
 import { useSelector, useDispatch } from "react-redux";
 import { HabitacionSingle, setHabitaciones, selectHabitaciones, cancelarReserva } from "../src/store/Habitaciones";
 import { useState } from "react";
+import logo from './img/logo-iberostar.jpg';
 
+const Form = styled.form({
+  display: 'flex', 
+  justifyContent: 'center', 
+  alignItems: 'center',
+  marginBottom: '40px',
+})
+
+const Div = styled.div({
+  display: 'grid', 
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  border: '3px solid black', 
+  borderRadius: '10px', 
+  width: '300px',
+})
+
+const RoomDiv = styled.div<{ isFirst: boolean }>`
+  margin-bottom: 10px;
+  margin-top: ${props => props.isFirst ? '20px' : '0'};
+`;
+
+const Label = styled.label({
+  color: 'black',
+  marginBottom: '10px',
+})
+
+const RoomState = styled.span<{ state: 'Libre' | 'Ocupada' }>`
+  color: ${props => props.state === 'Libre' ? 'green' : 'red'};
+`;
+
+const Button = styled.button<{ isSubmit?: boolean }>`
+  margin-left: 10px;
+  background-color: ${props => props.isSubmit ? 'green' : 'red'};
+  color: white;
+`;
 
 export default function Hoteles() {
   const dispatch = useDispatch();
@@ -19,7 +56,7 @@ export default function Hoteles() {
   checkedRooms.forEach(num => {
     dispatch(cancelarReserva(num));
   });
-  setCheckedRooms([]); // Limpiar las habitaciones seleccionadas
+  setCheckedRooms([]);
 }
 
   function Submit2(e: React.FormEvent<HTMLFormElement>) {
@@ -33,21 +70,24 @@ export default function Hoteles() {
   }
 
  return (
-    <form style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onSubmit={Submit2}>
-      <div style={{ display: 'grid', justifyContent: 'center', alignItems: 'center', border: '3px solid black', borderRadius: '10px', width: '300px' }}>
-        {habitaciones.map((habitacion: HabitacionSingle) => (
-          <div key={habitacion.num} style={{ marginBottom: '10px' }}>
-            <label style={{ color: 'green' }}>
+  <>
+  <img src={logo} alt="Logo de Iberostar" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '30%' }} />
+    <Form onSubmit={Submit2}>
+      <Div>
+        {habitaciones.map((habitacion: HabitacionSingle, index: number) => (
+          <RoomDiv key={habitacion.num} isFirst={index === 0}>
+            <Label>
               <input type="checkbox" onChange={e => handleCheckboxChange(e, habitacion.num)} />
-              Habitación {habitacion.num} | {habitacion.state}
-            </label>
-          </div>
+              Habitación {habitacion.num} | <RoomState state={habitacion.state}>{habitacion.state}</RoomState>
+            </Label>
+          </RoomDiv>
         ))}
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100px', margin: '20px auto' }}>
-          <input style={{ marginRight: '10px', marginLeft: '-30px' }} type="submit" value="Reservar" />
-          <button style={{ marginLeft: '10px' }} onClick={handleCancelClick}>Cancelar reserva</button>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100px', margin: '20px auto' }}>
+          <Button type="submit" isSubmit>Reservar</Button>
+          <Button onClick={handleCancelClick}>Cancelar</Button>
         </div>
-      </div>
-    </form>
+      </Div>
+    </Form>
+    </>
   );
 }
