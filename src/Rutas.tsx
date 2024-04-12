@@ -5,7 +5,7 @@ import RickMorty from './RickMorty'
 import RickMortyAxios from './RickMortyAxios'
 import Hotels from './Hotels'
 
-export default function  Rutas () {
+export default function Rutas () {
   return (
     <Routes>
         <Route path="/" element={ <RickMorty/> }/>

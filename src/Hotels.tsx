@@ -4,14 +4,25 @@ import { HabitacionSingle, setHabitaciones, selectHabitaciones, cancelarReserva 
 import { useState } from "react";
 import logo from './img/logo-iberostar.jpg';
 
-const Form = styled.form({
+const Logo = styled.img({
+  display: 'block', 
+  marginLeft: 'auto', 
+  marginRight: 'auto', 
+  width: '30%',
+})
+
+interface FormProps {}
+
+const Form = styled.form<FormProps>({
   display: 'flex', 
   justifyContent: 'center', 
   alignItems: 'center',
   marginBottom: '40px',
 })
 
-const Div = styled.div({
+interface DivProps {}
+
+const RoomListContainer = styled.div<DivProps>({
   display: 'grid', 
   justifyContent: 'center', 
   alignItems: 'center', 
@@ -20,25 +31,46 @@ const Div = styled.div({
   width: '300px',
 })
 
-const RoomDiv = styled.div<{ isFirst: boolean }>`
+interface RoomDivProps {
+  isFirst: boolean;
+}
+
+const RoomDiv = styled.div<RoomDivProps>`
   margin-bottom: 10px;
   margin-top: ${props => props.isFirst ? '20px' : '0'};
 `;
 
-const Label = styled.label({
+interface LabelProps {}
+
+const Label = styled.label<LabelProps>({
   color: 'black',
   marginBottom: '10px',
 })
 
-const RoomState = styled.span<{ state: 'Libre' | 'Ocupada' }>`
+interface RoomStateProps {
+  state: 'Libre' | 'Ocupada';
+}
+
+const RoomState = styled.span<RoomStateProps>`
   color: ${props => props.state === 'Libre' ? 'green' : 'red'};
 `;
 
-const Button = styled.button<{ isSubmit?: boolean }>`
+interface ButtonProps {
+  isSubmit?: boolean;
+}
+
+const Button = styled.button<ButtonProps>`
   margin-left: 10px;
   background-color: ${props => props.isSubmit ? 'green' : 'red'};
   color: white;
 `;
+
+const ButtonContainer = styled.div({
+  display: 'flex', 
+  justifyContent: 'center', 
+  width: '100px', 
+  margin: '20px auto',
+})
 
 export default function Hoteles() {
   const dispatch = useDispatch();
@@ -52,6 +84,7 @@ export default function Hoteles() {
       setCheckedRooms(prev => prev.filter(n => n !== num));
     }
   }
+
   function handleCancelClick() {
   checkedRooms.forEach(num => {
     dispatch(cancelarReserva(num));
@@ -71,9 +104,9 @@ export default function Hoteles() {
 
  return (
   <>
-  <img src={logo} alt="Logo de Iberostar" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '30%' }} />
+  <Logo src={logo} alt="Logo de Iberostar" />
     <Form onSubmit={Submit2}>
-      <Div>
+      <RoomListContainer>
         {habitaciones.map((habitacion: HabitacionSingle, index: number) => (
           <RoomDiv key={habitacion.num} isFirst={index === 0}>
             <Label>
@@ -82,11 +115,11 @@ export default function Hoteles() {
             </Label>
           </RoomDiv>
         ))}
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100px', margin: '20px auto' }}>
+        <ButtonContainer>
           <Button type="submit" isSubmit>Reservar</Button>
           <Button onClick={handleCancelClick}>Cancelar</Button>
-        </div>
-      </Div>
+        </ButtonContainer>
+      </RoomListContainer>
     </Form>
     </>
   );

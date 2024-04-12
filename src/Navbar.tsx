@@ -2,11 +2,11 @@ import { NavLink as RouterNavLink } from 'react-router-dom';
 import styled from '@emotion/styled';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 interface NavbarProps {
   backgroundColor?: string;
   color?: string;
 }
+
 const NavbarStyled = styled.nav<NavbarProps>(
   {
     justifyContent: 'space-between',
@@ -19,6 +19,7 @@ const NavbarStyled = styled.nav<NavbarProps>(
     color: props.color || '#fff',
   })
 );
+
 interface NavLinksContainerProps {
   
 }  
