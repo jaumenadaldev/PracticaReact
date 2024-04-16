@@ -96,6 +96,8 @@ export default function Hoteles() {
     if (updatedRooms.length > 0) {
       dispatch(setHabitaciones(updatedRooms));
     }
+    const changedRooms = updatedRooms.filter((room, index) => room.state !== initialHabitacionesRef.current[index].state);
+    console.log(changedRooms);
   };
 
   const habitacionesMemo = useMemo(() => habitaciones.map((habitacion, index) => (
