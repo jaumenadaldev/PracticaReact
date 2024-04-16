@@ -4,6 +4,7 @@ import RickMortyAll from './RickMortyAll'
 import RickMorty from './RickMorty'
 import RickMortyAxios from './RickMortyAxios'
 import Hotels from './Hotels'
+import FormulariFormik from './FormulariFormik'
 
 export default function Rutas () {
   return (
@@ -13,6 +14,7 @@ export default function Rutas () {
         <Route path="/allRickMorty" element={ <RickMortyAll/> }/>
         <Route path="/axiosRickMorty" element={ <RickMortyAxios/> }/>
         <Route path="/hotels" element={ <Hotels/> }/>
+        <Route path='/formulariFormik' element={ <FormulariFormik/> }/>
     </Routes>
   )
 }

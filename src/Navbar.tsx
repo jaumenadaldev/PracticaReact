@@ -80,6 +80,7 @@ export default function Navbar() {
             <NavLink to="/allRickMorty">All Rick and Morty</NavLink>
             <NavLink to="/axiosRickMorty">Rick and Morty Axios</NavLink>
             <NavLink to="/hotels">Hotels</NavLink>
+            <NavLink to="/formulariFormik">Formulari Formik</NavLink>
           </NavLinksContainer>
       </NavbarStyled>
     </>
