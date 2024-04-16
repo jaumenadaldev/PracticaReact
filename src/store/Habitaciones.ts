@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-export interface HabitacionSingle{
-    num: number,
-    state: "Libre" | "Ocupada"
+export interface HabitacionSingle {
+  num: number;
+  state: "Libre" | "Ocupada";
 }
 
 interface HabitacionesState {
@@ -15,29 +15,22 @@ const initialState: HabitacionesState = {
   })),
 };
 
+
 const HabitacionesSlice = createSlice({
-    name: 'Habitaciones',
-    initialState:initialState,
-    reducers: {
-        setHabitaciones: (state, action: PayloadAction<HabitacionSingle>) => {
-            const habitacionToUpdate = state.habitaciones.find(
-                habitacion => habitacion.num === action.payload.num
-            );
-            if (habitacionToUpdate) {
-                habitacionToUpdate.state = action.payload.state; 
-            }
-        },
-        cancelarReserva: (state, action: PayloadAction<number>) => {
-      const habitacionToUpdate = state.habitaciones.find(
-        (habitacion) => habitacion.num === action.payload
-      );
-      if (habitacionToUpdate) {
-        habitacionToUpdate.state = "Libre";
-      }
+  name: 'Habitaciones',
+  initialState,
+  reducers: {
+    setHabitaciones: (state, action: PayloadAction<{ num: number; state: "Libre" | "Ocupada" }[]>) => {
+      action.payload.forEach(update => {
+        const habitacion = state.habitaciones.find(h => h.num === update.num);
+        if (habitacion) {
+          habitacion.state = update.state;
+        }
+      });
     },
-    },
+  },
 });
 
-export const { setHabitaciones, cancelarReserva } = HabitacionesSlice.actions;
+export const { setHabitaciones } = HabitacionesSlice.actions;
 export const selectHabitaciones = (state: { Habitaciones: HabitacionesState }) => state.Habitaciones;
 export default HabitacionesSlice.reducer;

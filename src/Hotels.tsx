@@ -1,126 +1,128 @@
-import styled from '@emotion/styled'
+import { useEffect, useRef, useState, useMemo, FormEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { HabitacionSingle, setHabitaciones, selectHabitaciones, cancelarReserva } from "../src/store/Habitaciones";
-import { useState } from "react";
+import { setHabitaciones, selectHabitaciones, HabitacionSingle } from "../src/store/Habitaciones";
+import styled from '@emotion/styled';
 import logo from './img/logo-iberostar.jpg';
+
+interface RoomDivProps {
+  isFirst: boolean;
+}
+
+interface RoomStateProps {
+  state: 'Libre' | 'Ocupada';
+}
 
 const Logo = styled.img({
   display: 'block', 
   marginLeft: 'auto', 
   marginRight: 'auto', 
   width: '30%',
-})
+});
 
-interface FormProps {}
-
-const Form = styled.form<FormProps>({
-  display: 'flex', 
-  justifyContent: 'center', 
+const FormContainer = styled.div({
+  display: 'flex',
+  justifyContent: 'center',
   alignItems: 'center',
-  marginBottom: '40px',
-})
+  width: '100%',
+  marginBottom: '30px',
+});
 
-interface DivProps {}
-
-const RoomListContainer = styled.div<DivProps>({
+const RoomListContainer = styled.div({
   display: 'grid', 
   justifyContent: 'center', 
   alignItems: 'center', 
   border: '3px solid black', 
   borderRadius: '10px', 
   width: '300px',
-})
+});
 
-interface RoomDivProps {
-  isFirst: boolean;
-}
+const RoomDiv = styled.div<RoomDivProps>(
+  {
+    marginBottom: '10px',
+  },
+  props => ({
+    marginTop: props.isFirst ? '20px' : '0'
+  })
+);
 
-const RoomDiv = styled.div<RoomDivProps>`
-  margin-bottom: 10px;
-  margin-top: ${props => props.isFirst ? '20px' : '0'};
-`;
-
-interface LabelProps {}
-
-const Label = styled.label<LabelProps>({
+const Label = styled.label({
   color: 'black',
   marginBottom: '10px',
-})
+});
 
-interface RoomStateProps {
-  state: 'Libre' | 'Ocupada';
-}
+const RoomState = styled.span<RoomStateProps>(
+  {
+    fontWeight: 'bold',
+  },
+  props => ({
+    color: props.state === 'Libre' ? 'green' : 'red'
+  })
+);
 
-const RoomState = styled.span<RoomStateProps>`
-  color: ${props => props.state === 'Libre' ? 'green' : 'red'};
-`;
-
-interface ButtonProps {
-  isSubmit?: boolean;
-}
-
-const Button = styled.button<ButtonProps>`
-  margin-left: 10px;
-  background-color: ${props => props.isSubmit ? 'green' : 'red'};
-  color: white;
-`;
-
-const ButtonContainer = styled.div({
-  display: 'flex', 
-  justifyContent: 'center', 
-  width: '100px', 
-  margin: '20px auto',
-})
+const Button = styled.button(
+  {
+    backgroundColor: 'black',
+    color: 'white',
+    padding: '10px 20px',
+    marginTop: '20px',
+    marginBottom: '20px',
+  }
+);
 
 export default function Hoteles() {
   const dispatch = useDispatch();
   const { habitaciones } = useSelector(selectHabitaciones);
-  const [checkedRooms, setCheckedRooms] = useState<number[]>([]);
+  const [selectedRooms, setSelectedRooms] = useState<{ [key: number]: boolean }>({});
+  const initialHabitacionesRef = useRef<HabitacionSingle[]>([]);
 
-  function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>, num: number) {
-    if (e.target.checked) {
-      setCheckedRooms(prev => [...prev, num]);
-    } else {
-      setCheckedRooms(prev => prev.filter(n => n !== num));
-    }
-  }
+  useEffect(() => {
+    initialHabitacionesRef.current = habitaciones.map(room => ({ ...room }));
+  }, [habitaciones]);
 
-  function handleCancelClick() {
-  checkedRooms.forEach(num => {
-    dispatch(cancelarReserva(num));
-  });
-  setCheckedRooms([]);
-}
+  const handleCheckboxChange = (num: number) => {
+    setSelectedRooms(prev => ({
+      ...prev,
+      [num]: !prev[num]
+    }));
+  };
 
-  function Submit2(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    checkedRooms.forEach(num => {
-      const habitacion = habitaciones.find(h => h.num === num);
-      if (habitacion && habitacion.state === "Libre") {
-        dispatch(setHabitaciones({ ...habitacion, state: "Ocupada" }));
-      }
+    const updatedRooms = habitaciones.filter(room => selectedRooms[room.num]).map(room => {
+      const newState = room.state === 'Libre' ? 'Ocupada' : 'Libre' as 'Libre' | 'Ocupada';
+      return { num: room.num, state: newState };
     });
-  }
 
- return (
-  <>
-  <Logo src={logo} alt="Logo de Iberostar" />
-    <Form onSubmit={Submit2}>
-      <RoomListContainer>
-        {habitaciones.map((habitacion: HabitacionSingle, index: number) => (
-          <RoomDiv key={habitacion.num} isFirst={index === 0}>
-            <Label>
-              <input type="checkbox" onChange={e => handleCheckboxChange(e, habitacion.num)} />
-              Habitación {habitacion.num} | <RoomState state={habitacion.state}>{habitacion.state}</RoomState>
-            </Label>
-          </RoomDiv>
-        ))}
-        <ButtonContainer>
-          <Button type="submit" isSubmit>Reservar</Button>
-          <Button onClick={handleCancelClick}>Cancelar</Button>
-        </ButtonContainer>
-      </RoomListContainer>
-    </Form>
+    if (updatedRooms.length > 0) {
+      dispatch(setHabitaciones(updatedRooms));
+    }
+  };
+
+  const habitacionesMemo = useMemo(() => habitaciones.map((habitacion, index) => (
+    <RoomDiv key={habitacion.num} isFirst={index === 0}>
+      <Label>
+        Habitación {habitacion.num} | <RoomState state={habitacion.state}>{habitacion.state}</RoomState>
+        <input
+          name={`room-${habitacion.num}`}
+          type="checkbox"
+          checked={selectedRooms[habitacion.num]}
+          onChange={() => handleCheckboxChange(habitacion.num)}
+        />
+      </Label>
+    </RoomDiv>
+  )), [habitaciones, selectedRooms]);
+
+  return (
+    <>
+      <Logo src={logo} alt="Logo de Iberostar" />
+      <FormContainer>
+        <form onSubmit={handleSubmit}>
+          <RoomListContainer>
+            {habitacionesMemo}
+            <Button type="submit">Cambiar Estado</Button>
+          </RoomListContainer>
+        </form>
+      </FormContainer>
     </>
   );
 }
