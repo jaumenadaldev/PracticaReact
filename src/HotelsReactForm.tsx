@@ -90,6 +90,7 @@ export default function HotelManagement() {
     if (updatedRooms.length > 0) {
       dispatch(setHabitaciones(updatedRooms));
     }
+    console.log("Habitaciones cambiadas:");
     console.log(updatedRooms);
   };
 

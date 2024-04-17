@@ -4,6 +4,7 @@ import { setHabitaciones, selectHabitaciones, HabitacionSingle } from "../src/st
 import styled from '@emotion/styled';
 import logo from './img/logo-iberostar.jpg';
 import { Formik, Field, Form } from 'formik';
+import Hola from "./hola";
 
 interface RoomContainerProps {
   isFirst: boolean;
@@ -88,6 +89,7 @@ export default function HotelManagement() {
     if (updatedRooms.length > 0) {
       dispatch(setHabitaciones(updatedRooms));
     }
+    console.log("Habitaciones cambiadas:");
     console.log(updatedRooms);
   };
 
@@ -95,7 +97,8 @@ export default function HotelManagement() {
     <RoomContainer key={habitacion.num} isFirst={index === 0}>
       <RoomLabel>
         Habitación {habitacion.num} | <RoomStatus state={habitacion.state}>{habitacion.state}</RoomStatus>
-        <Field
+        <Hola number={habitacion.num} />
+        <Field 
           name={`room-${habitacion.num}`}
           type="checkbox"
         />
