@@ -81,6 +81,8 @@ export default function Navbar() {
             <NavLink to="/axiosRickMorty">Rick and Morty Axios</NavLink>
             <NavLink to="/hotels">Hotels</NavLink>
             <NavLink to="/formulariFormik">Formulari Formik</NavLink>
+            <NavLink to="/hotelsFormik">Hotels Formik</NavLink>
+            <NavLink to="/hotelsReactHookForm">Hotels React Hook Form</NavLink>
           </NavLinksContainer>
       </NavbarStyled>
     </>

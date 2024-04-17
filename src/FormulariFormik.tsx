@@ -29,7 +29,8 @@ const Input = styled(Field)({
   padding: '8px',
   border: '1px solid #ccc',
   borderRadius: '4px',
-  width: '100%'
+  width: '100%',
+  display: 'block'
 });
 
 const ErrorMessageStyled = styled(ErrorMessage)({
@@ -68,6 +69,7 @@ const FormulariFormik: React.FC = () => {
         name: string;
         email: string;
         password: string;
+        edad?: number
     }
 
     const initialValues: FormValues = {
@@ -105,6 +107,12 @@ const FormulariFormik: React.FC = () => {
                         <Label htmlFor="password">Contraseña:</Label>
                         <Input type="password" id="password" name="password" />
                         <ErrorMessageStyled name="password" component="div" />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="edad">Edad:</Label>
+                        <Input type="edad" id="edad" name="edad" />
+                        <ErrorMessageStyled name="edad" component="div" />
                     </div>
 
                     <Button type="submit">Enviar</Button>

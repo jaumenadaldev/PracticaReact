@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, useMemo, FormEvent } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setHabitaciones, selectHabitaciones, HabitacionSingle } from "../src/store/Habitaciones";
 import styled from '@emotion/styled';
 import logo from './img/logo-iberostar.jpg';
+import { Formik, Field, Form } from 'formik';
 
 interface RoomContainerProps {
   isFirst: boolean;
@@ -72,23 +73,14 @@ const SubmitButton = styled.button(
 export default function HotelManagement() {
   const dispatch = useDispatch();
   const { habitaciones } = useSelector(selectHabitaciones);
-  const [selectedRooms, setSelectedRooms] = useState<{ [key: number]: boolean }>({});
   const initialRoomStateRef = useRef<HabitacionSingle[]>([]);
 
   useEffect(() => {
     initialRoomStateRef.current = habitaciones.map(room => ({ ...room }));
   }, [habitaciones]);
 
-  const handleRoomSelectionChange = (num: number) => {
-    setSelectedRooms(prev => ({
-      ...prev,
-      [num]: !prev[num]
-    }));
-  };
-
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const updatedRooms = habitaciones.filter(room => selectedRooms[room.num]).map(room => {
+  const handleFormSubmit = (values: { [key: string]: boolean }) => {
+    const updatedRooms = habitaciones.filter(room => values[`room-${room.num}`]).map(room => {
       const newState = room.state === 'Libre' ? 'Ocupada' : 'Libre' as 'Libre' | 'Ocupada';
       return { num: room.num, state: newState };
     });
@@ -103,26 +95,29 @@ export default function HotelManagement() {
     <RoomContainer key={habitacion.num} isFirst={index === 0}>
       <RoomLabel>
         Habitación {habitacion.num} | <RoomStatus state={habitacion.state}>{habitacion.state}</RoomStatus>
-        <input
+        <Field
           name={`room-${habitacion.num}`}
           type="checkbox"
-          checked={selectedRooms[habitacion.num]}
-          onChange={() => handleRoomSelectionChange(habitacion.num)}
         />
       </RoomLabel>
     </RoomContainer>
-  )), [habitaciones, selectedRooms]);
+  )), [habitaciones]);
 
   return (
     <>
       <HotelLogo src={logo} alt="Logo de Iberostar" />
       <FormWrapper>
-        <form onSubmit={handleFormSubmit}>
-          <RoomListWrapper>
-            {roomListMemo}
-            <SubmitButton type="submit">Cambiar Estado</SubmitButton>
-          </RoomListWrapper>
-        </form>
+        <Formik
+          initialValues={habitaciones.reduce((acc, curr) => ({ ...acc, [`room-${curr.num}`]: false }), {})}
+          onSubmit={handleFormSubmit}
+        >
+          <Form>
+            <RoomListWrapper>
+              {roomListMemo}
+              <SubmitButton type="submit">Cambiar Estado</SubmitButton>
+            </RoomListWrapper>
+          </Form>
+        </Formik>
       </FormWrapper>
     </>
   );
