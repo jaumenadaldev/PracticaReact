@@ -3,15 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { setHabitaciones, selectHabitaciones, HabitacionSingle } from "../src/store/Habitaciones";
 import styled from '@emotion/styled';
 import logo from './img/logo-iberostar.jpg';
-import { Formik, Field, Form } from 'formik';
-import Hola from "./hola";
+import { Formik, Form } from 'formik';
+import CambioEstado from "./CambioEstado";
 
 interface RoomContainerProps {
   isFirst: boolean;
-}
-
-interface RoomStatusProps {
-  state: 'Libre' | 'Ocupada';
 }
 
 const HotelLogo = styled.img({
@@ -52,15 +48,6 @@ const RoomLabel = styled.label({
   marginBottom: '10px',
 });
 
-const RoomStatus = styled.span<RoomStatusProps>(
-  {
-    fontWeight: 'bold',
-  },
-  props => ({
-    color: props.state === 'Libre' ? 'green' : 'red'
-  })
-);
-
 const SubmitButton = styled.button(
   {
     backgroundColor: 'black',
@@ -80,40 +67,39 @@ export default function HotelManagement() {
     initialRoomStateRef.current = habitaciones.map(room => ({ ...room }));
   }, [habitaciones]);
 
-  const handleFormSubmit = (values: { [key: string]: boolean }) => {
-    const updatedRooms = habitaciones.filter(room => values[`room-${room.num}`]).map(room => {
-      const newState = room.state === 'Libre' ? 'Ocupada' : 'Libre' as 'Libre' | 'Ocupada';
-      return { num: room.num, state: newState };
-    });
+  interface FormValues {
+  [key: string]: boolean;
+}
 
+  const handleFormSubmit = (values : FormValues) => {
+
+    const updatedRooms = habitaciones.filter(room => values[`room-${room.num}`]).map(room => ({
+      num: room.num,
+      state: room.state === 'Libre' ? 'Ocupada' : 'Libre' as 'Libre' | 'Ocupada'
+    }));
     if (updatedRooms.length > 0) {
       dispatch(setHabitaciones(updatedRooms));
     }
-    console.log("Habitaciones cambiadas:");
-    console.log(updatedRooms);
+    console.log(updatedRooms); 
   };
+
+  const initialValues = useMemo(() => habitaciones.reduce((acc, curr) => ({
+    ...acc, [`room-${curr.num}`]: false
+  }), {}), [habitaciones]);
 
   const roomListMemo = useMemo(() => habitaciones.map((habitacion, index) => (
     <RoomContainer key={habitacion.num} isFirst={index === 0}>
       <RoomLabel>
-        Habitación {habitacion.num} | <RoomStatus state={habitacion.state}>{habitacion.state}</RoomStatus>
-        <Hola number={habitacion.num} />
-        <Field 
-          name={`room-${habitacion.num}`}
-          type="checkbox"
-        />
+        <CambioEstado number={habitacion.num} estado={habitacion.state} />
       </RoomLabel>
     </RoomContainer>
   )), [habitaciones]);
 
-  return (
+return (
     <>
       <HotelLogo src={logo} alt="Logo de Iberostar" />
       <FormWrapper>
-        <Formik
-          initialValues={habitaciones.reduce((acc, curr) => ({ ...acc, [`room-${curr.num}`]: false }), {})}
-          onSubmit={handleFormSubmit}
-        >
+        <Formik initialValues={initialValues} onSubmit={handleFormSubmit}>
           <Form>
             <RoomListWrapper>
               {roomListMemo}
