@@ -77,6 +77,7 @@ export default function HotelManagement() {
       num: room.num,
       state: room.state === 'Libre' ? 'Ocupada' : 'Libre' as 'Libre' | 'Ocupada'
     }));
+    
     if (updatedRooms.length > 0) {
       dispatch(setHabitaciones(updatedRooms));
     }

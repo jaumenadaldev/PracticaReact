@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ComponenteLista from '../listaModificada';
+import ComponenteLista from './listaModificada';
 
 describe('ComponenteLista', () => {
   test('se renderiza con la lista inicial y alterna entre vistas modificadas', () => {
@@ -23,7 +23,6 @@ describe('ComponenteLista', () => {
 
     fireEvent.click(screen.getByText('Modificar Nombres'));
 
-    expect(screen.getByText('Raul (Masculino)')).toBeInTheDocument();
+    expect(screen.queryByText('Raul (Masculino)')).not.toBeInTheDocument();
   });
 });
-

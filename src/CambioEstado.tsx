@@ -23,6 +23,8 @@ const RoomStatus = styled.span<RoomStatusProps>(
 const CambioEstado: React.FC<CambioEstadoProps> = ({ number, estado }) => {
 
     const label = useMemo(() => {
+      console.log(`Habitación ${number}`);
+      
         return `Habitación ${number}: ${estado}`;
     }, [number, estado]);
 
